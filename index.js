@@ -13,7 +13,7 @@ app.post("/", async (req, res) => {
   try {
     const response = await axios.get(apiURL);
     const favCharData =
-      response.data.find(obj => obj.name === "Henry Schrader");
+      response.data.find(obj => obj.name === "Gustavo Fring");
     const favCharacter = new Character(favCharData);
     const data = await favCharacter.save();
     res.json(data);
@@ -37,5 +37,18 @@ app.get("/", async (req, res) => {
     });
   }
 });
+
+app.delete("/", async (req, res) => {
+  try {
+    const deleteChar = await Character.findOne({ name: "Gustavo Fring" })
+    await deleteChar.remove()
+    res.send("Deleted successfully!")
+  } catch (error) {
+    res.json({
+      message: "Some error occurred",
+      error,
+    });
+  }
+})
 
 app.listen(3000);
