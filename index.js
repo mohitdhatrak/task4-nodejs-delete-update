@@ -1,24 +1,41 @@
-// const express = require('express');
-// const router = express.Router();
-// const axios = require('axios').default;
+const express = require('express');
+const axios = require('axios');
+const { connectToMongoDB } = require("./db/db.connect.js");
+const { Character } = require("./models/character.model.js");
 
-// const app = express();
+const app = express();
 
-// app.use(router);
+connectToMongoDB();
 
-// router.get("/", async (req, res) => {
-//   let response;
-//   const apiURL = "https://breakingbadapi.com/api/characters";
+app.post("/", async (req, res) => {
+  const apiURL = "https://breakingbadapi.com/api/characters";
 
-//   try {
-//     response = await axios.get(apiURL);
-//     // console.log(response.data);
-//   }
-//   catch (err) {
-//     res.send("Some error has occured, please try again later!");
-//   }
+  try {
+    const response = await axios.get(apiURL);
+    const favCharData =
+      response.data.find(obj => obj.name === "Henry Schrader");
+    const favCharacter = new Character(favCharData);
+    const data = await favCharacter.save();
+    res.json(data);
+  }
+  catch (error) {
+    res.json({
+      message: "Some error occurred",
+      error,
+    });
+  }
+})
 
-//   res.json(response.data);
-// });
+app.get("/", async (req, res) => {
+  try {
+    const favChar = await Character.find({});
+    res.json({ favChar });
+  } catch (error) {
+    res.json({
+      message: "Could not get the character data",
+      error,
+    });
+  }
+});
 
-// app.listen(3000);
+app.listen(3000);
