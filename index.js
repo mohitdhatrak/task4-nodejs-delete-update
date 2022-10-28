@@ -51,4 +51,18 @@ app.delete("/", async (req, res) => {
   }
 })
 
+app.put("/", async (req, res) => {
+  try {
+    const updateChar = await Character.findOne({ name: "Gustavo Fring" })
+    updateChar.name = "Fustavo Gring"
+    const data = await updateChar.save();
+    res.json(data);
+  } catch (error) {
+    res.json({
+      message: "Some error occurred",
+      error,
+    });
+  }
+})
+
 app.listen(3000);
